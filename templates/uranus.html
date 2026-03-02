@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uranus Chronicles</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;600;800&display=swap');
+
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a2847 30%, #2c5aa0 70%, #4682b4 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #00bfff 0%, #87ceeb 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px #00bfff, 0 0 40px #00bfff, 0 0 60px #00bfff;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #e0f6ff;
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(0, 191, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 60%, rgba(135, 206, 235, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 40% 80%, rgba(70, 130, 180, 0.06) 0%, transparent 40%);
+            z-index: -2;
+        }
+
+        .story-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+            padding: 1rem;
+        }
+
+        .story-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+            font-weight: 900;
+            text-align: center;
+            background: linear-gradient(45deg, #00bfff, #87ceeb, #4682b4, #1e90ff);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glacialShift 5s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(0, 191, 255, 0.4);
+            margin-bottom: 1rem;
+            letter-spacing: 0.15em;
+            flex-shrink: 0;
+        }
+
+        @keyframes glacialShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .planet-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            min-height: 0;
+        }
+
+        .uranus-system {
+            position: relative;
+            width: clamp(250px, 28vw, 350px);
+            height: clamp(250px, 28vw, 350px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-98deg); /* Uranus's unique tilt */
+        }
+
+        .uranus-planet {
+            width: clamp(150px, 18vw, 250px);
+            height: clamp(150px, 18vw, 250px);
+            background: radial-gradient(circle at 25% 25%,
+                #e0f6ff 0%,
+                #87ceeb 15%,
+                #4682b4 35%,
+                #1e90ff 55%,
+                #0066cc 75%,
+                #003d7a 90%,
+                #002a5c 100%);
+            border-radius: 50%;
+            position: relative;
+            animation: drift 8s ease-in-out infinite, spin 40s linear infinite;
+            box-shadow:
+                0 0 50px rgba(0, 191, 255, 0.4),
+                0 0 100px rgba(0, 191, 255, 0.2),
+                inset -30px -30px 50px rgba(0, 0, 0, 0.4);
+            z-index: 2;
+        }
+
+        /* Uranus's methane atmosphere bands */
+        .uranus-planet::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background:
+                linear-gradient(0deg, transparent 0%, rgba(135, 206, 235, 0.3) 8%, transparent 16%),
+                linear-gradient(0deg, transparent 20%, rgba(70, 130, 180, 0.4) 28%, transparent 36%),
+                linear-gradient(0deg, transparent 40%, rgba(30, 144, 255, 0.3) 48%, transparent 56%),
+                linear-gradient(0deg, transparent 60%, rgba(0, 191, 255, 0.2) 68%, transparent 76%),
+                linear-gradient(0deg, transparent 80%, rgba(224, 246, 255, 0.2) 88%, transparent 96%);
+        }
+
+        /* Ice crystal effect */
+        .uranus-planet::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 30% 70%, rgba(224, 246, 255, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 50% 20%, rgba(135, 206, 235, 0.06) 0%, transparent 15%);
+            animation: crystallize 6s ease-in-out infinite;
+        }
+
+        @keyframes crystallize {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Uranus's unique vertical rings */
+        .uranus-rings {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateY(15deg);
+            z-index: 1;
+        }
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: verticalRingRotate 45s linear infinite;
+        }
+
+        .ring:nth-child(1) {
+            width: clamp(210px, 26vw, 320px);
+            height: clamp(210px, 26vw, 320px);
+            border-color: rgba(0, 191, 255, 0.7);
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
+        }
+
+        .ring:nth-child(2) {
+            width: clamp(230px, 28vw, 350px);
+            height: clamp(230px, 28vw, 350px);
+            border-color: rgba(135, 206, 235, 0.5);
+            box-shadow: 0 0 12px rgba(135, 206, 235, 0.3);
+            animation-duration: 48s;
+        }
+
+        .ring:nth-child(3) {
+            width: clamp(250px, 30vw, 380px);
+            height: clamp(250px, 30vw, 380px);
+            border-color: rgba(70, 130, 180, 0.4);
+            box-shadow: 0 0 10px rgba(70, 130, 180, 0.2);
+            animation-duration: 52s;
+        }
+
+        .ring:nth-child(4) {
+            width: clamp(270px, 32vw, 410px);
+            height: clamp(270px, 32vw, 410px);
+            border-color: rgba(30, 144, 255, 0.3);
+            box-shadow: 0 0 8px rgba(30, 144, 255, 0.15);
+            animation-duration: 55s;
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            25% { transform: translateY(-10px) translateX(5px); }
+            50% { transform: translateY(-20px) translateX(0px); }
+            75% { transform: translateY(-10px) translateX(-5px); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes verticalRingRotate {
+            from { transform: translate(-50%, -50%) rotateY(15deg) rotateZ(0deg); }
+            to { transform: translate(-50%, -50%) rotateY(15deg) rotateZ(360deg); }
+        }
+
+        .story-interface {
+            background: linear-gradient(135deg, rgba(26, 40, 71, 0.9), rgba(44, 90, 160, 0.9));
+            border: 2px solid #00bfff;
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 40px rgba(0, 191, 255, 0.3);
+            flex-shrink: 0;
+            max-height: 35vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-text {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            min-height: 80px;
+            max-height: 120px;
+            padding: 1rem;
+            background: rgba(0, 20, 40, 0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 191, 255, 0.4);
+            color: #e0f6ff;
+            position: relative;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #00bfff;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            position: relative;
+            top: 0.1em;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .story-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .next-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.6rem 1.5rem;
+            background: linear-gradient(45deg, #00bfff, #87ceeb);
+            border: none;
+            border-radius: 25px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.4);
+            min-width: 100px;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(0, 191, 255, 0.6);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .home-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.5rem 1.2rem;
+            background: linear-gradient(45deg, #4682b4, #1e90ff);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.4);
+        }
+
+        .home-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(70, 130, 180, 0.6);
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #00bfff;
+        }
+
+        .progress-bar {
+            width: 80px;
+            height: 4px;
+            background: rgba(0, 191, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00bfff, #4682b4);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: var(--progress, 0%);
+        }
+
+        .glow-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(0, 191, 255, 0.04) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: icePulse 10s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes icePulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.1; }
+        }
+
+        /* Ring ice crystals */
+        .ring-crystal {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #e0f6ff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00bfff;
+            animation: crystalSparkle 3s infinite;
+        }
+
+        @keyframes crystalSparkle {
+            0%, 100% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Floating ice particles */
+        .ice-particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: rgba(224, 246, 255, 0.6);
+            border-radius: 50%;
+            animation: float-ice 15s infinite linear;
+        }
+
+        @keyframes float-ice {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .story-container {
+                padding: 0.5rem;
+            }
+
+            .story-interface {
+                padding: 1rem;
+            }
+
+            .story-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .next-btn, .home-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .progress-indicator {
+                justify-content: center;
+            }
+
+            .uranus-system {
+                transform: rotate(-98deg) scale(0.7);
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 191, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00bfff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <div class="stars"></div>
+    <div class="nebula"></div>
+    <div class="glow-effect"></div>
+
+    <div class="story-container">
+        <h1 class="story-title">Uranus's Story: Hit, Hurt, Healing</h1>
+
+        <div class="planet-section">
+            <div class="uranus-system" id="uranusSystem">
+                <div class="uranus-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+                <div class="uranus-planet" id="uranusPlanet"></div>
+            </div>
+        </div>
+
+        <div class="story-interface">
+            <div class="story-text" id="storyText">
+                {{ story }}
+            </div>
+
+            <div class="story-controls">
+                <button class="home-btn" onclick="goHome()">← Home</button>
+
+                <div class="progress-indicator">
+                    <span>Progress:</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span id="progressText">1/10</span>
+                </div>
+
+                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function updateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1;
+            cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            requestAnimationFrame(updateCursor);
+        }
+        updateCursor();
+
+        // Create stars
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 4 + 's';
+
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Create ice particles
+        function createIceParticles() {
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'ice-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+
+        // Create ring crystals
+        function createRingCrystals() {
+            const rings = document.querySelectorAll('.ring');
+            rings.forEach((ring, ringIndex) => {
+                for (let i = 0; i < 12; i++) {
+                    const crystal = document.createElement('div');
+                    crystal.className = 'ring-crystal';
+
+                    const angle = (i / 12) * 360;
+                    const radius = (ring.offsetWidth / 2) - 8;
+                    const x = Math.cos(angle * Math.PI / 180) * radius;
+                    const y = Math.sin(angle * Math.PI / 180) * radius;
+
+                    crystal.style.left = `calc(50% + ${x}px)`;
+                    crystal.style.top = `calc(50% + ${y}px)`;
+                    crystal.style.animationDelay = (i * 0.25 + ringIndex * 0.3) + 's';
+
+                    ring.appendChild(crystal);
+                }
+            });
+        }
+
+        // Story management
+        let currentStoryPart = 1;
+        let totalParts = 60;
+        let isTyping = false;
+
+        // Typing animation function
+        function typeText(element, text, speed = 30) {
+            return new Promise((resolve) => {
+                isTyping = true;
+                element.innerHTML = '';
+                let i = 0;
+
+                // Add cursor
+                const cursor = document.createElement('span');
+                cursor.className = 'typing-cursor';
+                element.appendChild(cursor);
+
+                function typeChar() {
+                    if (i < text.length) {
+                        // Insert character before cursor
+                        const textNode = document.createTextNode(text.charAt(i));
+                        element.insertBefore(textNode, cursor);
+                        i++;
+
+                        // Variable speed for more natural typing
+                        const nextSpeed = speed + Math.random() * 20;
+                        setTimeout(typeChar, nextSpeed);
+                    } else {
+                        // Remove cursor when done
+                        setTimeout(() => {
+                            cursor.remove();
+                            isTyping = false;
+                            resolve();
+                        }, 500);
+                    }
+                }
+
+                typeChar();
+            });
+        }
+
+        // Button hover effects
+        document.querySelectorAll('.next-btn, .home-btn').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(1.5)';
+            });
+
+            element.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+            });
+        });
+
+        // Story progression function
+        async function nextStory() {
+            if (isTyping) return; // Prevent clicking during typing
+
+            const nextBtn = document.getElementById('nextBtn');
+            const storyText = document.getElementById('storyText');
+
+            // Disable button and show loading
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<div class="loading"></div> Loading...';
+
+            try {
+                // Make request to Flask backend
+                const response = await fetch('/uranus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        story_part: currentStoryPart
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const newText = data.message || data.text || 'Story continues...';
+
+                    await typeText(storyText, newText, 25);
+
+                    // Update progress
+                    currentStoryPart++;
+                    updateProgress();
+
+                    // Update planet image if provided
+                    if (data.planet_image) {
+                        updatePlanetImage(data.planet_image);
+                    }
+
+                    // Check if story is complete
+                    if (data.is_complete || currentStoryPart >= totalParts) {
+                        nextBtn.textContent = 'Story Complete';
+                        nextBtn.disabled = true;
+                    }
+
+                } else {
+                    throw new Error('Failed to load story');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                await typeText(storyText, 'Error loading story. Please try again.', 40);
+            } finally {
+                // Re-enable button
+                if (currentStoryPart < totalParts) {
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = 'Next →';
+                }
+            }
+        }
+
+        // Update progress indicator
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            const progressPercentage = (currentStoryPart / totalParts) * 100;
+            progressFill.style.setProperty('--progress', progressPercentage + '%');
+            progressText.textContent = `${currentStoryPart}/${totalParts}`;
+        }
+
+        // Update planet image (for dynamic changes)
+        function updatePlanetImage(imageUrl) {
+            const uranus = document.getElementById('uranusPlanet');
+            // Add a crystallize effect to indicate change
+            uranus.style.animation = 'drift 8s ease-in-out infinite, spin 40s linear infinite, crystallize 1s ease-in-out';
+            setTimeout(() => {
+                uranus.style.animation = 'drift 8s ease-in-out infinite, spin 40s linear infinite';
+            }, 1000);
+        }
+
+        // Navigate back to home
+        function goHome() {
+            if (isTyping) return; // Prevent navigation during typing
+            window.location.href = '/';
+        }
+
+        // Skip typing animation on click
+        document.getElementById('storyText').addEventListener('click', () => {
+            if (isTyping) {
+                // Fast-forward typing by reducing the global speed
+                // This could be enhanced further to instantly complete typing
+                isTyping = false;
+            }
+        });
+
+        // Initialize
+        createStars();
+        createIceParticles();
+        createRingCrystals();
+        updateProgress();
+
+        // Handle page visibility for pause/resume animations
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                document.querySelectorAll('*').forEach(el => {
+                    if (el.style.animationPlayState !== undefined) {
+                        el.style.animationPlayState = 'paused';
+                    }
+                });
+            } else {
+                document.querySelectorAll('*').forEach(el => {
+                    if (el.style.animationPlayState !== undefined) {
+                        el.style.animationPlayState = 'running';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

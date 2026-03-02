@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neptune's Story</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #162e5e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #00bfff 0%, #0080ff 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px #00bfff, 0 0 40px #00bfff, 0 0 60px #00bfff;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(0, 191, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(30, 144, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(70, 130, 180, 0.1) 0%, transparent 50%);
+            z-index: -2;
+        }
+
+        .story-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .story-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            text-align: center;
+            background: linear-gradient(45deg, #00bfff, #1e90ff, #4682b4, #6495ed);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(0, 191, 255, 0.3);
+            margin-bottom: 2rem;
+            letter-spacing: 0.1em;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .planet-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .neptune-planet {
+            width: clamp(200px, 25vw, 350px);
+            height: clamp(200px, 25vw, 350px);
+            background: radial-gradient(circle at 25% 25%,
+                #87ceeb 0%,
+                #4682b4 15%,
+                #1e90ff 30%,
+                #0080ff 50%,
+                #0066cc 70%,
+                #003d7a 85%,
+                #002952 100%);
+            border-radius: 50%;
+            position: relative;
+            animation: float 7s ease-in-out infinite, rotate 16s linear infinite;
+            box-shadow:
+                0 0 60px rgba(0, 191, 255, 0.4),
+                0 0 120px rgba(0, 191, 255, 0.3),
+                0 0 180px rgba(0, 191, 255, 0.2),
+                inset -30px -30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Neptune's atmospheric bands and storms */
+        .neptune-planet::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background:
+                linear-gradient(15deg, transparent 0%, rgba(70, 130, 180, 0.3) 20%, transparent 35%),
+                linear-gradient(-10deg, transparent 40%, rgba(30, 144, 255, 0.4) 55%, transparent 70%),
+                linear-gradient(25deg, transparent 75%, rgba(0, 191, 255, 0.2) 85%, transparent 95%);
+            animation: atmosphericFlow 12s linear infinite;
+        }
+
+        /* Great Dark Spot */
+        .neptune-planet::after {
+            content: '';
+            position: absolute;
+            right: 30%;
+            top: 35%;
+            width: 25%;
+            height: 15%;
+            background: radial-gradient(ellipse, rgba(0, 0, 0, 0.6) 0%, rgba(0, 50, 100, 0.4) 50%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: darkSpotRotate 20s linear infinite;
+        }
+
+        @keyframes atmosphericFlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes darkSpotRotate {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .story-interface {
+            background: linear-gradient(135deg, rgba(26, 26, 62, 0.9), rgba(22, 46, 94, 0.9));
+            border: 2px solid #00bfff;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 40px rgba(0, 191, 255, 0.3);
+        }
+
+        .story-text {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            min-height: 120px;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 191, 255, 0.4);
+            color: #e8f4f8;
+            position: relative;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #00bfff;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            position: relative;
+            top: 0.1em;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .story-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .next-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, #1e90ff, #00bfff);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.4);
+            min-width: 120px;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(0, 191, 255, 0.6);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .home-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.6rem 1.5rem;
+            background: linear-gradient(45deg, #4682b4, #6495ed);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.4);
+        }
+
+        .home-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(70, 130, 180, 0.6);
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #00bfff;
+        }
+
+        .progress-bar {
+            width: 100px;
+            height: 4px;
+            background: rgba(0, 191, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00bfff, #1e90ff);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: var(--progress, 0%);
+        }
+
+        .glow-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(0, 191, 255, 0.04) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: pulse 10s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.1; }
+        }
+
+        /* Ice crystals floating effect */
+        .ice-crystal {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(173, 216, 230, 0.8);
+            border-radius: 2px;
+            animation: crystalFloat 20s linear infinite;
+            box-shadow: 0 0 10px rgba(173, 216, 230, 0.6);
+        }
+
+        @keyframes crystalFloat {
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) translateX(200px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Wind streams */
+        .wind-stream {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.3), transparent);
+            animation: windFlow 8s linear infinite;
+        }
+
+        @keyframes windFlow {
+            0% {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.6;
+            }
+            80% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(calc(100vw + 100px));
+                opacity: 0;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .story-container {
+                padding: 1rem;
+            }
+
+            .story-interface {
+                padding: 1.5rem;
+            }
+
+            .story-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .next-btn, .home-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .progress-indicator {
+                justify-content: center;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 191, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00bfff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <div class="stars"></div>
+    <div class="nebula"></div>
+    <div class="glow-effect"></div>
+
+    <div class="story-container">
+        <h1 class="story-title">Neptune's Story: The Cold Flame</h1>
+
+        <div class="planet-section">
+            <div class="neptune-planet" id="neptunePlanet"></div>
+        </div>
+
+        <div class="story-interface">
+            <div class="story-text" id="storyText">
+                {{ story }}
+            </div>
+
+            <div class="story-controls">
+                <button class="home-btn" onclick="goHome()">← Home</button>
+
+                <div class="progress-indicator">
+                    <span>Progress:</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span id="progressText">1/10</span>
+                </div>
+
+                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function updateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1;
+            cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            requestAnimationFrame(updateCursor);
+        }
+        updateCursor();
+
+        // Create stars (fewer for distant Neptune)
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 4 + 's';
+
+                const size = Math.random() * 2 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Create ice crystals effect
+        function createIceCrystals() {
+            const starsContainer = document.querySelector('.stars');
+            for (let i = 0; i < 15; i++) {
+                const crystal = document.createElement('div');
+                crystal.className = 'ice-crystal';
+                crystal.style.left = Math.random() * 100 + '%';
+                crystal.style.animationDelay = Math.random() * 20 + 's';
+                crystal.style.animationDuration = (20 + Math.random() * 10) + 's';
+
+                const size = Math.random() * 3 + 2;
+                crystal.style.width = size + 'px';
+                crystal.style.height = size + 'px';
+
+                starsContainer.appendChild(crystal);
+            }
+        }
+
+        // Create wind streams
+        function createWindStreams() {
+            const starsContainer = document.querySelector('.stars');
+            for (let i = 0; i < 8; i++) {
+                const wind = document.createElement('div');
+                wind.className = 'wind-stream';
+                wind.style.top = Math.random() * 100 + '%';
+                wind.style.width = Math.random() * 200 + 100 + 'px';
+                wind.style.animationDelay = Math.random() * 8 + 's';
+                wind.style.animationDuration = (8 + Math.random() * 4) + 's';
+
+                starsContainer.appendChild(wind);
+            }
+        }
+
+        // Story management
+        let currentStoryPart = 1;
+        let totalParts = 60;
+        let isTyping = false;
+
+        // Typing animation function
+        function typeText(element, text, speed = 30) {
+            return new Promise((resolve) => {
+                isTyping = true;
+                element.innerHTML = '';
+                let i = 0;
+
+                // Add cursor
+                const cursor = document.createElement('span');
+                cursor.className = 'typing-cursor';
+                element.appendChild(cursor);
+
+                function typeChar() {
+                    if (i < text.length) {
+                        // Insert character before cursor
+                        const textNode = document.createTextNode(text.charAt(i));
+                        element.insertBefore(textNode, cursor);
+                        i++;
+
+                        // Variable speed for more natural typing
+                        const nextSpeed = speed + Math.random() * 20;
+                        setTimeout(typeChar, nextSpeed);
+                    } else {
+                        // Remove cursor when done
+                        setTimeout(() => {
+                            cursor.remove();
+                            isTyping = false;
+                            resolve();
+                        }, 500);
+                    }
+                }
+
+                typeChar();
+            });
+        }
+
+        // Button hover effects
+        document.querySelectorAll('.next-btn, .home-btn').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(1.5)';
+            });
+
+            element.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+            });
+        });
+
+        // Story progression function
+        async function nextStory() {
+            if (isTyping) return; // Prevent clicking during typing
+
+            const nextBtn = document.getElementById('nextBtn');
+            const storyText = document.getElementById('storyText');
+
+            // Disable button and show loading
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<div class="loading"></div> Loading...';
+
+            try {
+                // Make request to Flask backend
+                const response = await fetch('/neptune', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        story_part: currentStoryPart
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const newText = data.message || data.text || 'Story continues...';
+
+                    await typeText(storyText, newText, 25);
+
+                    // Update progress
+                    currentStoryPart++;
+                    updateProgress();
+
+                    // Update planet image if provided
+                    if (data.planet_image) {
+                        updatePlanetImage(data.planet_image);
+                    }
+
+                    // Check if story is complete
+                    if (data.is_complete || currentStoryPart >= totalParts) {
+                        nextBtn.textContent = 'Story Complete';
+                        nextBtn.disabled = true;
+                    }
+
+                } else {
+                    throw new Error('Failed to load story');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                await typeText(storyText, 'Error loading story. Please try again.', 40);
+            } finally {
+                // Re-enable button
+                if (currentStoryPart < totalParts) {
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = 'Next →';
+                }
+            }
+        }
+
+        // Update progress indicator
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            const progressPercentage = (currentStoryPart / totalParts) * 100;
+            progressFill.style.setProperty('--progress', progressPercentage + '%');
+            progressText.textContent = `${currentStoryPart}/${totalParts}`;
+        }
+
+        // Update planet image (for dynamic changes)
+        function updatePlanetImage(imageUrl) {
+            const planet = document.getElementById('neptunePlanet');
+            // You can implement image changing logic here
+            // For now, we'll just add a pulse effect to indicate change
+            planet.style.animation = 'float 7s ease-in-out infinite, rotate 16s linear infinite, pulse 1s ease-in-out';
+            setTimeout(() => {
+                planet.style.animation = 'float 7s ease-in-out infinite, rotate 16s linear infinite';
+            }, 1000);
+        }
+
+        // Navigate back to home
+        function goHome() {
+            if (isTyping) return; // Prevent navigation during typing
+            window.location.href = '/';
+        }
+
+        // Skip typing animation on click
+        document.getElementById('storyText').addEventListener('click', () => {
+            if (isTyping) {
+                // Fast-forward typing by reducing the global speed
+                // This could be enhanced further to instantly complete typing
+                isTyping = false;
+            }
+        });
+
+        // Initialize
+        createStars();
+        createIceCrystals();
+        createWindStreams();
+        updateProgress();
+
+        // Handle page visibility for pause/resume animations
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                document.querySelectorAll('*').forEach(el => {
+                    if (el.style.animationPlayState !== undefined) {
+                        el.style.animationPlayState = 'paused';
+                    }
+                });
+            } else {
+                document.querySelectorAll('*').forEach(el => {
+                    if (el.style.animationPlayState !== undefined) {
+                        el.style.animationPlayState = 'running';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

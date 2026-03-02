@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth's Story</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a2642 50%, #2d4a7c 100%);
+            color: #ffffff;
+            cursor: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #4fc3f7 0%, #29b6f6 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px #4fc3f7, 0 0 40px #4fc3f7, 0 0 60px #4fc3f7;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 25% 45%, rgba(79, 195, 247, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 75% 25%, rgba(102, 187, 106, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 45% 75%, rgba(66, 165, 245, 0.06) 0%, transparent 40%);
+            z-index: -2;
+        }
+
+        .story-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+            padding: 1rem;
+        }
+
+        .story-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 900;
+            text-align: center;
+            background: linear-gradient(45deg, #4fc3f7, #66bb6a, #42a5f5, #26c6da);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(79, 195, 247, 0.3);
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+            flex-shrink: 0;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .planet-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 0;
+        }
+
+        .earth-system {
+            position: relative;
+            width: clamp(250px, 30vw, 350px);
+            height: clamp(250px, 30vw, 350px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .earth-planet {
+            width: clamp(180px, 22vw, 280px);
+            height: clamp(180px, 22vw, 280px);
+            background: radial-gradient(circle at 30% 30%,
+                #4fc3f7 0%,
+                #42a5f5 15%,
+                #66bb6a 35%,
+                #4caf50 50%,
+                #2e7d32 65%,
+                #1565c0 80%,
+                #0d47a1 100%);
+            border-radius: 50%;
+            position: relative;
+            animation: float 6s ease-in-out infinite, earthRotate 20s linear infinite;
+            box-shadow:
+                0 0 50px rgba(79, 195, 247, 0.3),
+                0 0 100px rgba(79, 195, 247, 0.2),
+                inset -30px -30px 50px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+
+        /* Earth's continents and oceans */
+        .earth-planet::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background:
+                radial-gradient(ellipse 40px 60px at 35% 25%, #4caf50 0%, transparent 50%),
+                radial-gradient(ellipse 60px 40px at 65% 35%, #2e7d32 0%, transparent 50%),
+                radial-gradient(ellipse 50px 70px at 25% 65%, #66bb6a 0%, transparent 50%),
+                radial-gradient(ellipse 35px 35px at 75% 70%, #388e3c 0%, transparent 50%),
+                linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 30%, transparent 60%);
+        }
+
+        /* Earth's atmosphere */
+        .earth-planet::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 85%, rgba(135, 206, 250, 0.3) 90%, rgba(135, 206, 250, 0.1) 100%);
+            animation: atmosphereGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes atmosphereGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Moon */
+        .moon {
+            position: absolute;
+            width: clamp(35px, 4vw, 60px);
+            height: clamp(35px, 4vw, 60px);
+            background: radial-gradient(circle at 35% 35%, #f5f5f5 0%, #e0e0e0 50%, #bdbdbd 100%);
+            border-radius: 50%;
+            box-shadow:
+                0 0 15px rgba(245, 245, 245, 0.2),
+                inset -8px -8px 15px rgba(0, 0, 0, 0.3);
+            animation: moonOrbit 15s linear infinite;
+            transform-origin: clamp(125px, 15vw, 175px) 0;
+        }
+
+        /* Moon craters */
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 25%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow:
+                15px 5px 0 -2px rgba(0, 0, 0, 0.2),
+                5px 15px 0 -3px rgba(0, 0, 0, 0.25),
+                -5px 10px 0 -4px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes earthRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes moonOrbit {
+            from { transform: rotate(0deg) translateX(clamp(125px, 15vw, 175px)) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(clamp(125px, 15vw, 175px)) rotate(-360deg); }
+        }
+
+        .story-interface {
+            background: linear-gradient(135deg, rgba(26, 38, 66, 0.9), rgba(45, 74, 124, 0.9));
+            border: 2px solid #4fc3f7;
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(79, 195, 247, 0.2);
+            flex-shrink: 0;
+            max-height: 35vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-text {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            min-height: 100px;
+            max-height: 150px;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            color: #f0f0f0;
+            position: relative;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #4fc3f7;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            position: relative;
+            top: 0.1em;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .story-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .next-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(45deg, #4fc3f7, #66bb6a);
+            border: none;
+            border-radius: 25px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 20px rgba(79, 195, 247, 0.3);
+            min-width: 100px;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(79, 195, 247, 0.5);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .home-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(45deg, #42a5f5, #26c6da);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 15px rgba(66, 165, 245, 0.3);
+        }
+
+        .home-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(66, 165, 245, 0.5);
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #4fc3f7;
+        }
+
+        .progress-bar {
+            width: 80px;
+            height: 4px;
+            background: rgba(79, 195, 247, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4fc3f7, #66bb6a);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: var(--progress, 0%);
+        }
+
+        .glow-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(79, 195, 247, 0.03) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.1; }
+        }
+
+        /* Cloud layers */
+        .clouds {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background:
+                radial-gradient(ellipse 80px 40px at 20% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse 60px 30px at 70% 20%, rgba(255, 255, 255, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse 70px 35px at 40% 70%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse 50px 25px at 80% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            animation: cloudDrift 25s linear infinite;
+        }
+
+        @keyframes cloudDrift {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Aurora effect */
+        .aurora {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(102, 187, 106, 0.2) 60deg,
+                transparent 120deg,
+                rgba(79, 195, 247, 0.2) 180deg,
+                transparent 240deg,
+                rgba(102, 187, 106, 0.2) 300deg,
+                transparent 360deg
+            );
+            animation: auroraShimmer 12s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes auroraShimmer {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .story-container {
+                padding: 0.5rem;
+            }
+
+            .story-interface {
+                padding: 1rem;
+            }
+
+            .story-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .next-btn, .home-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .progress-indicator {
+                justify-content: center;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(79, 195, 247, 0.3);
+            border-radius: 50%;
+            border-top-color: #4fc3f7;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <div class="stars"></div>
+    <div class="nebula"></div>
+    <div class="glow-effect"></div>
+
+    <div class="story-container">
+        <h1 class="story-title">Earth's Story: She Who Bears Life</h1>
+
+        <div class="planet-section">
+            <div class="earth-system" id="earthSystem">
+                <div class="aurora"></div>
+                <div class="earth-planet" id="earthPlanet">
+                    <div class="clouds"></div>
+                </div>
+                <div class="moon"></div>
+            </div>
+        </div>
+
+        <div class="story-interface">
+            <div class="story-text" id="storyText">
+                {{ story }}
+            </div>
+
+            <div class="story-controls">
+                <button class="home-btn" onclick="goHome()">← Home</button>
+
+                <div class="progress-indicator">
+                    <span>Progress:</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span id="progressText">1/10</span>
+                </div>
+
+                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function updateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1;
+            cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            requestAnimationFrame(updateCursor);
+        }
+        updateCursor();
+
+        // Create stars
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Story management
+        let currentStoryPart = 1;
+        let totalParts = 31;
+        let isTyping = false;
+
+        // Typing animation function
+        function typeText(element, text, speed = 30) {
+            return new Promise((resolve) => {
+                isTyping = true;
+                element.innerHTML = '';
+                let i = 0;
+
+                // Add cursor
+                const cursor = document.createElement('span');
+                cursor.className = 'typing-cursor';
+                element.appendChild(cursor);
+
+                function typeChar() {
+                    if (i < text.length) {
+                        // Insert character before cursor
+                        const textNode = document.createTextNode(text.charAt(i));
+                        element.insertBefore(textNode, cursor);
+                        i++;
+
+                        // Variable speed for more natural typing
+                        const nextSpeed = speed + Math.random() * 20;
+                        setTimeout(typeChar, nextSpeed);
+                    } else {
+                        // Remove cursor when done
+                        setTimeout(() => {
+                            cursor.remove();
+                            isTyping = false;
+                            resolve();
+                        }, 500);
+                    }
+                }
+
+                typeChar();
+            });
+        }
+
+        // Button hover effects
+        document.querySelectorAll('.next-btn, .home-btn').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(1.5)';
+            });
+
+            element.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+            });
+        });
+
+        // Story progression function
+        async function nextStory() {
+            if (isTyping) return; // Prevent clicking during typing
+
+            const nextBtn = document.getElementById('nextBtn');
+            const storyText = document.getElementById('storyText');
+
+            // Disable button and show loading
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<div class="loading"></div> Loading...';
+
+            try {
+                // Make request to Flask backend
+                const response = await fetch('/earth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        story_part: currentStoryPart
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const newText = data.message || data.text || 'Story continues...';
+
+                    await typeText(storyText, newText, 25);
+
+                    // Update progress
+                    currentStoryPart++;
+                    updateProgress();
+
+                    // Update planet image if provided
+                    if (data.planet_image) {
+                        updatePlanetImage(data.planet_image);
+                    }
+
+                    // Check if story is complete
+                    if (data.is_complete || currentStoryPart >= totalParts) {
+                        nextBtn.textContent = 'Story Complete';
+                        nextBtn.disabled = true;
+                    }
+
+                } else {
+                    throw new Error('Failed to load story');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                await typeText(storyText, 'Error loading story. Please try again.', 40);
+            } finally {
+                // Re-enable button
+                if (currentStoryPart < totalParts) {
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = 'Next →';
+                }
+            }
+        }
+
+        // Update progress indicator
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            const progressPercentage = (currentStoryPart / totalParts) * 100;
+            progressFill.style.setProperty('--progress', progressPercentage + '%');
+            progressText.textContent = `${currentStoryPart}/${totalParts}`;
+        }
+
+        // Update planet image (for dynamic changes)
+        function updatePlanetImage(imageUrl) {
+            const earth = document.getElementById('earthPlanet');
+            // Add a pulse effect to indicate change
+            earth.style.animation = 'float 6s ease-in-out infinite, earthRotate 20s linear infinite, pulse 1s ease-in-out';
+            setTimeout(() => {
+                earth.style.animation = 'float 6s ease-in-out infinite, earthRotate 20s linear infinite';
+            }, 1000);
+        }
+
+        // Navigate back to home
+        function goHome() {
+            if (isTyping) return; // Prevent navigation during typing
+            window.location.href = '/';
+        }
+
+        // Skip typing animation on click
+        document.getElementById('storyText').addEventListener('click', () => {
+            if (isTyping) {
+                // Fast-forward typing by reducing the global speed
+                // This could be enhanced further to instantly complete typing
+                isTyping = false;
+            }
+        });
+
+        // Initialize
+        createStars();
+        updateProgress();
+
+        // Handle page visibility for pause/resume animations
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                document.querySelectorAll('*').forEach(el => {
+                    if (el.style.animationPlayState !== undefined) {
+                        el.style.animationPlayState = 'paused';
+                    }
+                });
+            } else {
+                document.querySelectorAll('*').forEach(el => {
+                    if (el.style.animationPlayState !== undefined) {
+                        el.style.animationPlayState = 'running';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

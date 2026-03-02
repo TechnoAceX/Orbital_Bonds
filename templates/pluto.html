@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pluto's Story</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0f1a 30%, #0f0a0f 70%, #050205 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #9370db 0%, #4b0082 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px #9370db, 0 0 40px #9370db, 0 0 60px #9370db;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.8; }
+        }
+
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(147, 112, 219, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(75, 0, 130, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(138, 43, 226, 0.03) 0%, transparent 50%);
+            z-index: -2;
+        }
+
+        .cosmic-void {
+            position: fixed;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background:
+                conic-gradient(from 0deg, transparent 0deg, rgba(147, 112, 219, 0.015) 3deg, transparent 6deg),
+                conic-gradient(from 72deg, transparent 0deg, rgba(75, 0, 130, 0.01) 2deg, transparent 4deg),
+                conic-gradient(from 144deg, transparent 0deg, rgba(138, 43, 226, 0.008) 1deg, transparent 2deg);
+            animation: voidDrift 120s linear infinite;
+            z-index: -3;
+        }
+
+        @keyframes voidDrift {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .ice-crystals {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    15deg,
+                    transparent,
+                    transparent 8px,
+                    rgba(221, 160, 221, 0.005) 8px,
+                    rgba(221, 160, 221, 0.005) 16px
+                ),
+                repeating-linear-gradient(
+                    -15deg,
+                    transparent,
+                    transparent 12px,
+                    rgba(230, 230, 250, 0.003) 12px,
+                    rgba(230, 230, 250, 0.003) 24px
+                );
+            animation: crystalFloat 25s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes crystalFloat {
+            0% { transform: translateX(-80px) translateY(-40px); }
+            100% { transform: translateX(80px) translateY(40px); }
+        }
+
+        .story-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .story-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            text-align: center;
+            background: linear-gradient(45deg, #9370db, #4b0082, #8a2be2, #dda0dd, #e6e6fa);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: plutoGradient 5s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(147, 112, 219, 0.4);
+            margin-bottom: 2rem;
+            letter-spacing: 0.1em;
+        }
+
+        @keyframes plutoGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .planet-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .pluto-system {
+            position: relative;
+            width: clamp(200px, 25vw, 350px);
+            height: clamp(200px, 25vw, 350px);
+        }
+
+        .pluto-planet {
+            width: clamp(150px, 18vw, 250px);
+            height: clamp(150px, 18vw, 250px);
+            background: radial-gradient(circle at 40% 30%,
+                #dda0dd 0%,
+                #9370db 15%,
+                #8a2be2 30%,
+                #4b0082 45%,
+                #483d8b 60%,
+                #2f2f4f 75%,
+                #191970 90%,
+                #0a0a0f 100%);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: plutoFloat 4.2s ease-in-out infinite, plutoShrink 9s ease-in-out infinite;
+        }
+
+        .pluto-planet::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -60%;
+            width: 220%;
+            height: 220%;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(147, 112, 219, 0.12) 0%,
+                rgba(75, 0, 130, 0.08) 25%,
+                rgba(138, 43, 226, 0.06) 40%,
+                rgba(221, 160, 221, 0.04) 55%,
+                transparent 70%
+            );
+            border-radius: 50%;
+            animation: plutoShine 8s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes plutoShine {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.7) rotate(0deg);
+            }
+            50% {
+                opacity: 0.6;
+                transform: scale(1.1) rotate(180deg);
+            }
+        }
+
+        .charon-moon {
+            width: clamp(40px, 5vw, 70px);
+            height: clamp(40px, 5vw, 70px);
+            background: radial-gradient(circle at 35% 25%,
+                #e6e6fa 0%,
+                #dda0dd 20%,
+                #9370db 40%,
+                #696969 60%,
+                #2f2f4f 80%,
+                #191970 100%);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            animation: charonOrbit 12s linear infinite;
+            transform-origin: clamp(90px, 11vw, 150px) 0;
+        }
+
+        @keyframes charonOrbit {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .charon-moon::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(circle, rgba(230, 230, 250, 0.2) 0%, transparent 60%);
+            border-radius: 50%;
+            animation: charonGlow 6s ease-in-out infinite;
+        }
+
+        @keyframes charonGlow {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        .pluto-heart {
+            position: absolute;
+            top: 45%;
+            left: 35%;
+            width: 25%;
+            height: 20%;
+            background: radial-gradient(ellipse, rgba(221, 160, 221, 0.4) 0%, rgba(230, 230, 250, 0.2) 50%, transparent 70%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            filter: blur(1px);
+            animation: heartBeat 6s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .nitrogen-frost {
+            position: absolute;
+            top: 20%;
+            right: 25%;
+            width: 15%;
+            height: 15%;
+            background: radial-gradient(ellipse, rgba(230, 230, 250, 0.6) 0%, rgba(248, 248, 255, 0.3) 60%, transparent 80%);
+            border-radius: 50%;
+            animation: frostShimmer 10s ease-in-out infinite;
+        }
+
+        @keyframes frostShimmer {
+            0%, 100% { opacity: 0.5; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.9; transform: scale(1.2) rotate(180deg); }
+        }
+
+        @keyframes plutoFloat {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+            50% { transform: translate(-50%, -50%) translateY(-8px); }
+        }
+
+        @keyframes plutoShrink {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(0.85); }
+        }
+
+        .story-interface {
+            background: linear-gradient(135deg, rgba(26, 15, 26, 0.9), rgba(15, 10, 15, 0.9));
+            border: 2px solid #9370db;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .story-text {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            min-height: 120px;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(147, 112, 219, 0.3);
+            color: #e8e8e8;
+            position: relative;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #9370db;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            position: relative;
+            top: 0.1em;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .story-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .next-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, #9370db, #4b0082);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 20px rgba(147, 112, 219, 0.3);
+            min-width: 120px;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(147, 112, 219, 0.5);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .home-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.6rem 1.5rem;
+            background: linear-gradient(45deg, #8a2be2, #dda0dd);
+            border: none;
+            border-radius: 20px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .home-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #9370db;
+        }
+
+        .progress-bar {
+            width: 100px;
+            height: 4px;
+            background: rgba(147, 112, 219, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9370db, #4b0082);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: var(--progress, 0%);
+        }
+
+        .glow-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.04) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: plutoAmbience 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes plutoAmbience {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+            50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.1; }
+        }
+
+        .distant-stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 25% 35%, rgba(147, 112, 219, 0.015) 0%, transparent 50%),
+                radial-gradient(ellipse at 75% 65%, rgba(75, 0, 130, 0.01) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 20%, rgba(138, 43, 226, 0.008) 0%, transparent 50%);
+            animation: distantTwinkle 30s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        @keyframes distantTwinkle {
+            0%, 100% { opacity: 0.15; transform: scale(1) rotate(0deg); }
+            33% { opacity: 0.3; transform: scale(1.05) rotate(120deg); }
+            66% { opacity: 0.2; transform: scale(0.95) rotate(240deg); }
+        }
+
+        @media (max-width: 768px) {
+            .story-container {
+                padding: 1rem;
+            }
+
+            .story-interface {
+                padding: 1.5rem;
+            }
+
+            .story-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .next-btn, .home-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .progress-indicator {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <div class="stars"></div>
+    <div class="nebula"></div>
+    <div class="cosmic-void"></div>
+    <div class="ice-crystals"></div>
+    <div class="distant-stars"></div>
+    <div class="glow-effect"></div>
+
+    <div class="story-container">
+        <h1 class="story-title">Pluto's Story</h1>
+
+        <div class="planet-section">
+            <div class="pluto-system">
+                <div class="pluto-planet">
+                    <div class="pluto-heart"></div>
+                    <div class="nitrogen-frost"></div>
+                </div>
+                <div class="charon-moon"></div>
+            </div>
+        </div>
+
+        <div class="story-interface">
+            <div class="story-text" id="storyText">
+                <span class="typing-cursor"></span>
+            </div>
+
+            <div class="story-controls">
+                <button class="home-btn" onclick="goHome()">Home</button>
+
+                <div class="progress-indicator">
+                    <span id="progressText">1/70</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cursor = document.querySelector('.custom-cursor');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            const numberOfStars = 200;
+
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 4 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        let currentStoryIndex = 0;
+        const totalPages = 70;
+        const stories = new Array(totalPages).fill('');
+
+        function nextStory() {
+            if (currentStoryIndex < stories.length - 1) {
+                currentStoryIndex++;
+                displayStory();
+            }
+        }
+
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+
+        function displayStory() {
+            const storyText = document.getElementById('storyText');
+            const progressText = document.getElementById('progressText');
+            const progressFill = document.getElementById('progressFill');
+            const nextBtn = document.getElementById('nextBtn');
+
+            storyText.innerHTML = '<span class="typing-cursor"></span>';
+
+            progressText.textContent = `${currentStoryIndex + 1}/${totalPages}`;
+            const progressPercent = ((currentStoryIndex + 1) / totalPages) * 100;
+            progressFill.style.setProperty('--progress', progressPercent + '%');
+
+            nextBtn.disabled = currentStoryIndex >= stories.length - 1;
+        }
+
+        function init() {
+            createStars();
+            displayStory();
+        }
+
+        window.addEventListener('load', init);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextStory();
+            } else if (e.key === 'Home' || e.key === 'h') {
+                e.preventDefault();
+                goHome();
+            }
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'scale(1.2)';
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'scale(1)';
+        });
+
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(1.5)';
+            });
+
+            button.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
