@@ -573,67 +573,61 @@
         }
 
         // 🚀 Main send function
-        async function sendMessage() {
-            if (isSending) return;
+       async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chatBox");
 
-            const input = document.getElementById("userInput");
-            const chat = document.getElementById("chatBox");
+    const message = input.value.trim();
+    if (!message) return;
 
-            const message = input.value.trim();
-            if (!message) return;
+    chat.innerHTML += `<div class="msg user">> ${message}</div>`;
+    input.value = "";
 
-            isSending = true;
+    const botMsg = document.createElement("div");
+    botMsg.className = "msg bot";
+    botMsg.innerHTML = "Thinking...";
+    chat.appendChild(botMsg);
 
-            // 👤 User message
-            chat.innerHTML += `<div class="msg user">> ${message}</div>`;
-            input.value = "";
+    try {
+        const res = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message })
+        });
 
-            // 🤖 Bot placeholder
-            const botMsg = document.createElement("div");
-            botMsg.className = "msg bot";
-            botMsg.innerHTML = "Thinking...";
-            chat.appendChild(botMsg);
+        const data = await res.json();
+        botMsg.innerHTML = data.reply;
 
-            chat.scrollTop = chat.scrollHeight;
+    } catch (err) {
+        botMsg.innerHTML = "Server error";
+        console.error(err);
+    }
+}
 
-            try {
-                const res = await fetch("/chat", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        planet: window.location.pathname.split("/").pop() // ✅ dynamic
-                    })
-                });
+input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
 
-                const data = await res.json();
-
-                // ✨ Typing animation
-                typeText(botMsg, data.reply);
-
-            } catch (err) {
-                botMsg.innerHTML = "Something went wrong...";
-            }
-
-            chat.scrollTop = chat.scrollHeight;
-            isSending = false;
-        }
-
-        // ⌨️ Enter key support
         document.addEventListener("DOMContentLoaded", () => {
             const input = document.getElementById("userInput");
 
-            input.addEventListener("keydown", (e) => {
+            input.focus();
+
+            input.addEventListener("keydown", function (e) {
                 if (e.key === "Enter") {
                     e.preventDefault();
                     sendMessage();
                 }
             });
+        });
 
             input.focus(); // 🔥 auto focus
-        });
+    
         // Story management
         let currentStoryPart = 1;
         let totalParts = 31;
