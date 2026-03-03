@@ -513,56 +513,56 @@ function createStars() {
 
         let isSending = false;
 
-async function sendMessage() {
-    if (isSending) return;
+        async function sendMessage() {
+            if (isSending) return;
 
-    const input = document.getElementById("userInput");
-    const chat = document.getElementById("chatBox");
+            const input = document.getElementById("userInput");
+            const chat = document.getElementById("chatBox");
 
-    const message = input.value.trim();
-    if (!message) return;
+            const message = input.value.trim();
+            if (!message) return;
 
-    isSending = true;
+            isSending = true;
 
-    // 👤 USER MESSAGE
-    const userMsg = document.createElement("div");
-    userMsg.className = "msg user";
-    userMsg.innerText = message;
-    chat.appendChild(userMsg);
+            // 👤 USER MESSAGE
+            const userMsg = document.createElement("div");
+            userMsg.className = "msg user";
+            userMsg.innerText = message;
+            chat.appendChild(userMsg);
 
-    input.value = "";
-    chat.scrollTop = chat.scrollHeight;
+            input.value = "";
+            chat.scrollTop = chat.scrollHeight;
 
-    // 🤖 BOT MESSAGE (THINKING STATE)
-    const botMsg = document.createElement("div");
-    botMsg.className = "msg bot";
-    botMsg.innerHTML = "Thinking...";
-    chat.appendChild(botMsg);
+            // 🤖 BOT MESSAGE (THINKING STATE)
+            const botMsg = document.createElement("div");
+            botMsg.className = "msg bot";
+            botMsg.innerHTML = "Thinking...";
+            chat.appendChild(botMsg);
 
-    chat.scrollTop = chat.scrollHeight;
+            chat.scrollTop = chat.scrollHeight;
 
-    try {
-        const res = await fetch("/chat", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                message: message,
-                planet: window.location.pathname.split("/").pop()
-            })
-        });
+            try {
+                const res = await fetch("/chat", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        message: message,
+                        planet: window.location.pathname.split("/").pop()
+                    })
+                });
 
-        const data = await res.json();
+                const data = await res.json();
 
-        // ✨ TYPEWRITER EFFECT
-        await typeText(botMsg, data.reply, 18);
+                // ✨ TYPEWRITER EFFECT
+                await typeText(botMsg, data.reply, 18);
 
-    } catch {
-        botMsg.innerText = "Something went wrong...";
-    }
+            } catch {
+                botMsg.innerText = "Something went wrong...";
+            }
 
-    chat.scrollTop = chat.scrollHeight;
-    isSending = false;
-}
+            chat.scrollTop = chat.scrollHeight;
+            isSending = false;
+        }
         // Create atmospheric particles
         function createAtmosphericParticles() {
             const atmosphereLayers = document.querySelectorAll('.atmosphere-layer');

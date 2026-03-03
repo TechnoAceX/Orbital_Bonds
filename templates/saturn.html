@@ -111,6 +111,87 @@
             position: relative;
         }
 
+.input-wrapper {
+    margin-top: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 215, 0, 0.25);
+
+    width: 100%;
+    min-height: 55px;   /* 🔥 bigger box */
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper input {
+    width: 100%;
+    height: 100%;       /* fill wrapper */
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ddd;
+    font-size: 1rem;    /* slightly bigger text */
+    font-family: 'Space Mono', monospace;
+}
+
+        .msg {
+    margin: 6px 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.msg.user {
+    text-align: right;
+    color: #ff9999;
+}
+
+.msg.bot {
+    text-align: left;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.chat-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 18px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,215,0,0.3);
+    backdrop-filter: blur(8px);
+}
+
+.chat-input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: 'Space Mono', monospace;
+}
+
+.chat-input input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.chat-input button {
+    background: transparent;
+    border: none;
+    color: #ffd700;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.chat-input button:hover {
+    transform: scale(1.2);
+    color: #fff;
+}
+
         .saturn-system {
             position: relative;
             width: clamp(300px, 35vw, 450px);
@@ -288,51 +369,6 @@
             transform: none;
         }
 
-        .home-btn {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 0.6rem 1.5rem;
-            background: linear-gradient(45deg, #daa520, #b8860b);
-            border: none;
-            border-radius: 20px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
-        }
-
-        .home-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(218, 165, 32, 0.5);
-        }
-
-        .progress-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #ffd700;
-        }
-
-        .progress-bar {
-            width: 100px;
-            height: 4px;
-            background: rgba(255, 215, 0, 0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ffd700, #daa520);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-            width: var(--progress, 0%);
-        }
-
         .glow-effect {
             position: fixed;
             top: 50%;
@@ -381,15 +417,6 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-
-            .next-btn, .home-btn {
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-
-            .progress-indicator {
-                justify-content: center;
-            }
         }
 
         /* Loading animation */
@@ -429,23 +456,19 @@
         </div>
 
         <div class="story-interface">
-            <div class="story-text" id="storyText">
-                {{ story }}
-            </div>
+           <div class="story-text" id="chatBox"></div>
 
-            <div class="story-controls">
-                <button class="home-btn" onclick="goHome()">← Home</button>
-
-                <div class="progress-indicator">
-                    <span>Progress:</span>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <span id="progressText">1/10</span>
-                </div>
-
-                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next →</button>
-            </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+           <div class="input-wrapper">
+            <input 
+                id="userInput"
+                type="text"
+                placeholder="Say something..."
+                autocomplete="off"
+            >
+        </div>
+            <button onclick="sendMessage()" class="next-btn">Send</button>
+        </div>
         </div>
     </div>
 
@@ -470,7 +493,7 @@
         updateCursor();
 
         // Create stars
-        function createStars() {
+         function createStars() {
             const starsContainer = document.querySelector('.stars');
             for (let i = 0; i < 150; i++) {
                 const star = document.createElement('div');
@@ -485,6 +508,62 @@
 
                 starsContainer.appendChild(star);
             }
+        }
+
+
+             let isSending = false;
+
+                async function sendMessage() {
+
+            if (isSending) return;
+            
+
+            const input = document.getElementById("userInput");
+            const chat = document.getElementById("chatBox");
+
+            const message = input.value.trim();
+            if (!message) return;
+
+            isSending = true;
+
+            // 👤 USER MESSAGE
+            const userMsg = document.createElement("div");
+            userMsg.className = "msg user";
+            userMsg.innerText = message;
+            chat.appendChild(userMsg);
+
+            input.value = "";
+            chat.scrollTop = chat.scrollHeight;
+
+            // 🤖 BOT MESSAGE (THINKING STATE)
+            const botMsg = document.createElement("div");
+            botMsg.className = "msg bot";
+            botMsg.innerHTML = "Thinking...";
+            chat.appendChild(botMsg);
+
+            chat.scrollTop = chat.scrollHeight;
+
+            try {
+                const res = await fetch("/chat", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        message: message,
+                        planet: window.location.pathname.split("/").pop()
+                    })
+                });
+
+                const data = await res.json();
+
+                // ✨ TYPEWRITER EFFECT
+                await typeText(botMsg, data.reply, 18);
+
+            } catch {
+                botMsg.innerText = "Something went wrong...";
+            }
+
+            chat.scrollTop = chat.scrollHeight;
+            isSending = false;
         }
 
         // Create ring sparkles
@@ -566,7 +645,7 @@
             if (isTyping) return; // Prevent clicking during typing
 
             const nextBtn = document.getElementById('nextBtn');
-            const storyText = document.getElementById('storyText');
+            const storyText = document.getElementById('chatbox');
 
             // Disable button and show loading
             nextBtn.disabled = true;
@@ -589,10 +668,6 @@
                     const newText = data.message || data.text || 'Story continues...';
 
                     await typeText(storyText, newText, 25);
-
-                    // Update progress
-                    currentStoryPart++;
-                    updateProgress();
 
                     // Update planet image if provided
                     if (data.planet_image) {
@@ -621,15 +696,7 @@
             }
         }
 
-        // Update progress indicator
-        function updateProgress() {
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-
-            const progressPercentage = (currentStoryPart / totalParts) * 100;
-            progressFill.style.setProperty('--progress', progressPercentage + '%');
-            progressText.textContent = `${currentStoryPart}/${totalParts}`;
-        }
+         createStars();
 
         // Update planet image (for dynamic changes)
         function updatePlanetImage(imageUrl) {
@@ -647,8 +714,21 @@
             window.location.href = '/';
         }
 
+        document.addEventListener("DOMContentLoaded", () => {
+            const input = document.getElementById("userInput");
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            input.focus();
+        });
+
         // Skip typing animation on click
-        document.getElementById('storyText').addEventListener('click', () => {
+        document.getElementById('chatbox').addEventListener('click', () => {
             if (isTyping) {
                 // Fast-forward typing by reducing the global speed
                 // This could be enhanced further to instantly complete typing
@@ -659,7 +739,6 @@
         // Initialize
         createStars();
         createRingSparkles();
-        updateProgress();
 
         // Handle page visibility for pause/resume animations
         document.addEventListener('visibilitychange', () => {
