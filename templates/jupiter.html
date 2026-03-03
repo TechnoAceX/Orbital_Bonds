@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🟠 Tarun — The Presence</title>
+    <title>Jupiter's Story</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
 
@@ -346,6 +346,63 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .chat-box {
+    margin-top: 15px;
+}
+
+
+#chat {
+    max-height: 120px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+}
+
+#userInput {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.input-area button {
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: none;
+    background: #00ffff;
+    cursor: pointer;
+}
+
+.msg {
+    padding: 10px 15px;
+    margin: 8px 0;
+    border-radius: 12px;
+    max-width: 70%;
+    line-height: 1.4;
+}
+
+.user {
+    background: #00ffff;
+    color: black;
+    margin-left: auto;
+    text-align: right;
+}
+
+.bot {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    margin-right: auto;
+}
+
     </style>
 </head>
 <body>
@@ -361,233 +418,162 @@
             <div class="jupiter-planet" id="jupiterPlanet"></div>
         </div>
 
-        <div class="story-interface">
-            <div class="story-text" id="storyText">
-                {{ story }}
+            <div class="story-text" id="chatBox"></div>
+
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <input 
+                    id="userInput" 
+                    type="text" 
+                    placeholder="Talk to Jupiter..." 
+                    style="flex:1; padding:10px; border-radius:10px; border:none;"
+                >
+                <button onclick="sendMessage()" class="next-btn">Send</button>
             </div>
 
             <div class="story-controls">
-                <button class="home-btn" onclick="goHome()">← Home</button>
-
-                <div class="progress-indicator">
-                    <span>Progress:</span>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <span id="progressText">1/10</span>
-                </div>
-
-                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next →</button>
+                
             </div>
         </div>
     </div>
+<script>
+/* ===============================
+   CURSOR
+=================================*/
+const cursor = document.querySelector('.custom-cursor');
 
-    <script>
-        // Custom cursor
-        const cursor = document.querySelector('.custom-cursor');
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
+let mouseX = 0, mouseY = 0;
+let cursorX = 0, cursorY = 0;
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+function updateCursor() {
+    cursorX += (mouseX - cursorX) * 0.1;
+    cursorY += (mouseY - cursorY) * 0.1;
+
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+
+    requestAnimationFrame(updateCursor);
+}
+updateCursor();
+
+
+/* ===============================
+   STARS BACKGROUND
+=================================*/
+function createStars() {
+    const starsContainer = document.querySelector('.stars');
+
+    for (let i = 0; i < 150; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+
+        const size = Math.random() * 3 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+
+        starsContainer.appendChild(star);
+    }
+}
+
+
+/* ===============================
+   CHAT SYSTEM
+=================================*/
+async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chatBox");
+
+    const message = input.value.trim();
+    if (!message) return;
+
+    // USER MESSAGE
+    chat.innerHTML += `
+        <div class="msg user">${message}</div>
+    `;
+
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+
+    try {
+        const res = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message,
+                planet: "jupiter"
+            })
         });
 
-        function updateCursor() {
-            cursorX += (mouseX - cursorX) * 0.1;
-            cursorY += (mouseY - cursorY) * 0.1;
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-            requestAnimationFrame(updateCursor);
+        const data = await res.json();
+
+        // BOT MESSAGE
+        chat.innerHTML += `
+            <div class="msg bot">${data.reply}</div>
+        `;
+
+    } catch (err) {
+        chat.innerHTML += `
+            <div class="msg bot">Hmm... something went wrong, my child.</div>
+        `;
+        console.error(err);
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+}
+
+
+/* ===============================
+   ENTER KEY SUPPORT
+=================================*/
+document.getElementById("userInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
+
+
+/* ===============================
+   BUTTON HOVER EFFECT
+=================================*/
+document.querySelectorAll('.next-btn, .home-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'scale(1.5)';
+    });
+
+    btn.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'scale(1)';
+    });
+});
+
+
+/* ===============================
+   INIT
+=================================*/
+createStars();
+
+
+/* ===============================
+   PAUSE ANIMATIONS (TAB SWITCH)
+=================================*/
+document.addEventListener('visibilitychange', () => {
+    const state = document.hidden ? 'paused' : 'running';
+
+    document.querySelectorAll('*').forEach(el => {
+        if (el.style.animationPlayState !== undefined) {
+            el.style.animationPlayState = state;
         }
-        updateCursor();
-
-        // Create stars
-        function createStars() {
-            const starsContainer = document.querySelector('.stars');
-            for (let i = 0; i < 150; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-
-                const size = Math.random() * 3 + 1;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-
-                starsContainer.appendChild(star);
-            }
-        }
-
-        // Story management
-        let currentStoryPart = 1;
-        let totalParts = 65;
-        let isTyping = false;
-
-        // Typing animation function
-        function typeText(element, text, speed = 30) {
-            return new Promise((resolve) => {
-                isTyping = true;
-                element.innerHTML = '';
-                let i = 0;
-
-                // Add cursor
-                const cursor = document.createElement('span');
-                cursor.className = 'typing-cursor';
-                element.appendChild(cursor);
-
-                function typeChar() {
-                    if (i < text.length) {
-                        // Insert character before cursor
-                        const textNode = document.createTextNode(text.charAt(i));
-                        element.insertBefore(textNode, cursor);
-                        i++;
-
-                        // Variable speed for more natural typing
-                        const nextSpeed = speed + Math.random() * 20;
-                        setTimeout(typeChar, nextSpeed);
-                    } else {
-                        // Remove cursor when done
-                        setTimeout(() => {
-                            cursor.remove();
-                            isTyping = false;
-                            resolve();
-                        }, 500);
-                    }
-                }
-
-                typeChar();
-            });
-        }
-
-        // Button hover effects
-        document.querySelectorAll('.next-btn, .home-btn').forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'scale(1.5)';
-            });
-
-            element.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'scale(1)';
-            });
-        });
-
-        // Story progression function
-        async function nextStory() {
-            if (isTyping) return; // Prevent clicking during typing
-
-            const nextBtn = document.getElementById('nextBtn');
-            const storyText = document.getElementById('storyText');
-
-            // Disable button and show loading
-            nextBtn.disabled = true;
-            nextBtn.innerHTML = '<div class="loading"></div> Loading...';
-
-            try {
-                // Make request to Flask backend
-                const response = await fetch('/jupiter', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        story_part: currentStoryPart
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const newText = data.message || data.text || 'Story continues...';
-
-                    await typeText(storyText, newText, 25);
-
-                    // Update progress
-                    currentStoryPart++;
-                    updateProgress();
-
-                    // Update planet image if provided
-                    if (data.planet_image) {
-                        updatePlanetImage(data.planet_image);
-                    }
-
-                    // Check if story is complete
-                    if (data.is_complete || currentStoryPart >= totalParts) {
-                        nextBtn.textContent = 'Story Complete';
-                        nextBtn.disabled = true;
-                    }
-
-                } else {
-                    throw new Error('Failed to load story');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                await typeText(storyText, 'Error loading story. Please try again.', 40);
-            } finally {
-                // Re-enable button
-                if (currentStoryPart < totalParts) {
-                    nextBtn.disabled = false;
-                    nextBtn.textContent = 'Next →';
-                }
-            }
-        }
-
-        // Update progress indicator
-        function updateProgress() {
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-
-            const progressPercentage = (currentStoryPart / totalParts) * 100;
-            progressFill.style.setProperty('--progress', progressPercentage + '%');
-            progressText.textContent = `${currentStoryPart}/${totalParts}`;
-        }
-
-        // Update planet image (for dynamic changes)
-        function updatePlanetImage(imageUrl) {
-            const planet = document.getElementById('jupiterPlanet');
-            // You can implement image changing logic here
-            // For now, we'll just add a pulse effect to indicate change
-            planet.style.animation = 'float 6s ease-in-out infinite, rotate 30s linear infinite, pulse 1s ease-in-out';
-            setTimeout(() => {
-                planet.style.animation = 'float 6s ease-in-out infinite, rotate 30s linear infinite';
-            }, 1000);
-        }
-
-        // Navigate back to home
-        function goHome() {
-            if (isTyping) return; // Prevent navigation during typing
-            window.location.href = '/';
-        }
-
-        // Skip typing animation on click
-        document.getElementById('storyText').addEventListener('click', () => {
-            if (isTyping) {
-                // Fast-forward typing by reducing the global speed
-                // This could be enhanced further to instantly complete typing
-                isTyping = false;
-            }
-        });
-
-        // Initialize
-        createStars();
-        updateProgress();
-
-        // Handle page visibility for pause/resume animations
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                document.querySelectorAll('*').forEach(el => {
-                    if (el.style.animationPlayState !== undefined) {
-                        el.style.animationPlayState = 'paused';
-                    }
-                });
-            } else {
-                document.querySelectorAll('*').forEach(el => {
-                    if (el.style.animationPlayState !== undefined) {
-                        el.style.animationPlayState = 'running';
-                    }
-                });
-            }
-        });
-    </script>
+    });
+});
+</script>
 </body>
 </html>

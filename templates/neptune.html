@@ -36,6 +36,24 @@
             box-shadow: 0 0 20px #00bfff, 0 0 40px #00bfff, 0 0 60px #00bfff;
         }
 
+        .msg {
+            margin: 6px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .msg.user {
+            text-align: right;
+            color: #06bbf2;
+        }
+
+        .msg.bot {
+            text-align: left;
+            color: #0083f6;
+            font-weight: bold;
+        }
+
         .stars {
             position: fixed;
             top: 0;
@@ -279,30 +297,6 @@
             box-shadow: 0 0 30px rgba(70, 130, 180, 0.6);
         }
 
-        .progress-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #00bfff;
-        }
-
-        .progress-bar {
-            width: 100px;
-            height: 4px;
-            background: rgba(0, 191, 255, 0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00bfff, #1e90ff);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-            width: var(--progress, 0%);
-        }
-
         .glow-effect {
             position: fixed;
             top: 50%;
@@ -388,15 +382,6 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-
-            .next-btn, .home-btn {
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-
-            .progress-indicator {
-                justify-content: center;
-            }
         }
 
         /* Loading animation */
@@ -428,26 +413,28 @@
             <div class="neptune-planet" id="neptunePlanet"></div>
         </div>
 
-        <div class="story-interface">
-            <div class="story-text" id="storyText">
-                {{ story }}
-            </div>
+        <div class="story-text" id="chatBox"></div>
 
-            <div class="story-controls">
-                <button class="home-btn" onclick="goHome()">← Home</button>
-
-                <div class="progress-indicator">
-                    <span>Progress:</span>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <span id="progressText">1/10</span>
-                </div>
-
-                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next →</button>
-            </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <input 
+            id="userInput" 
+            type="text" 
+            placeholder="Speak into the depths..."
+            style="
+                flex:1;
+                padding:12px;
+                border-radius:12px;
+                border:1px solid rgba(0, 170, 255, 0.3);
+                background: linear-gradient(145deg, rgba(0,10,30,0.9), rgba(0,40,80,0.7));
+                color:#ccefff;
+                outline:none;
+                font-family:'Space Mono', monospace;
+                box-shadow: 0 0 12px rgba(0,170,255,0.2);
+            "
+        >
+            <button onclick="sendMessage()" class="next-btn">Command</button>
         </div>
-    </div>
+
 
     <script>
         // Custom cursor
@@ -561,86 +548,48 @@
             });
         }
 
-        // Button hover effects
-        document.querySelectorAll('.next-btn, .home-btn').forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'scale(1.5)';
-            });
+        async function sendMessage() {
+        const input = document.getElementById("userInput");
+        const chat = document.getElementById("chatBox");
 
-            element.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'scale(1)';
+        const message = input.value.trim();
+        if (!message) return;
+
+        // user message
+        chat.innerHTML += `<div class="msg user">> ${message}</div>`;
+        input.value = "";
+
+        const res = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message,
+                planet: "neptune"
+            })
+        });
+
+        const data = await res.json();
+
+        // mars reply
+        chat.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const input = document.getElementById("userInput");
+
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendMessage();
+                }
             });
         });
 
-        // Story progression function
-        async function nextStory() {
-            if (isTyping) return; // Prevent clicking during typing
 
-            const nextBtn = document.getElementById('nextBtn');
-            const storyText = document.getElementById('storyText');
-
-            // Disable button and show loading
-            nextBtn.disabled = true;
-            nextBtn.innerHTML = '<div class="loading"></div> Loading...';
-
-            try {
-                // Make request to Flask backend
-                const response = await fetch('/neptune', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        story_part: currentStoryPart
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const newText = data.message || data.text || 'Story continues...';
-
-                    await typeText(storyText, newText, 25);
-
-                    // Update progress
-                    currentStoryPart++;
-                    updateProgress();
-
-                    // Update planet image if provided
-                    if (data.planet_image) {
-                        updatePlanetImage(data.planet_image);
-                    }
-
-                    // Check if story is complete
-                    if (data.is_complete || currentStoryPart >= totalParts) {
-                        nextBtn.textContent = 'Story Complete';
-                        nextBtn.disabled = true;
-                    }
-
-                } else {
-                    throw new Error('Failed to load story');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                await typeText(storyText, 'Error loading story. Please try again.', 40);
-            } finally {
-                // Re-enable button
-                if (currentStoryPart < totalParts) {
-                    nextBtn.disabled = false;
-                    nextBtn.textContent = 'Next →';
-                }
-            }
-        }
-
-        // Update progress indicator
-        function updateProgress() {
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-
-            const progressPercentage = (currentStoryPart / totalParts) * 100;
-            progressFill.style.setProperty('--progress', progressPercentage + '%');
-            progressText.textContent = `${currentStoryPart}/${totalParts}`;
-        }
 
         // Update planet image (for dynamic changes)
         function updatePlanetImage(imageUrl) {
@@ -659,20 +608,10 @@
             window.location.href = '/';
         }
 
-        // Skip typing animation on click
-        document.getElementById('storyText').addEventListener('click', () => {
-            if (isTyping) {
-                // Fast-forward typing by reducing the global speed
-                // This could be enhanced further to instantly complete typing
-                isTyping = false;
-            }
-        });
-
         // Initialize
         createStars();
         createIceCrystals();
         createWindStreams();
-        updateProgress();
 
         // Handle page visibility for pause/resume animations
         document.addEventListener('visibilitychange', () => {
