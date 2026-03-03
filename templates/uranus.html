@@ -237,6 +237,106 @@
             animation-duration: 55s;
         }
 
+        .msg {
+    margin: 6px 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.msg.user {
+    text-align: right;
+    color: #00c3ff;
+}
+
+.msg.bot {
+    text-align: left;
+    color: #00fffb;
+    font-weight: bold;
+}
+
+.chat-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 18px;
+
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    backdrop-filter: blur(10px);
+
+    width: 100%;
+}
+
+/* Input */
+.chat-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: #e0f7ff;
+    font-size: 1.05rem;
+    font-family: 'Space Mono', monospace;
+}
+
+.chat-bar input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.chat-bar button {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;   /* prevents stretching */
+
+    border-radius: 50%;   /* perfect circle */
+
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: white;
+    font-size: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.25s ease;
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.6);
+}
+
+.chat-bar button:hover {
+    transform: scale(1.1);
+}
+
+.typing {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.typing span {
+    width: 6px;
+    height: 6px;
+    background: #00c6ff;
+    border-radius: 50%;
+    animation: blink 1.4s infinite;
+}
+
+.typing span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.typing span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.2); }
+}
+
         @keyframes drift {
             0%, 100% { transform: translateY(0px) translateX(0px); }
             25% { transform: translateY(-10px) translateX(5px); }
@@ -267,21 +367,28 @@
             flex-direction: column;
         }
 
-        .story-text {
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            min-height: 80px;
-            max-height: 120px;
-            padding: 1rem;
-            background: rgba(0, 20, 40, 0.6);
-            border-radius: 10px;
-            border: 1px solid rgba(0, 191, 255, 0.4);
-            color: #e0f6ff;
-            position: relative;
-            overflow-y: auto;
-            flex: 1;
-        }
+.story-text {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    line-height: 1.6;
+
+    height: 180px;          /* fixed height */
+    overflow-y: auto;
+
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 200, 255, 0.3);
+}
+
+/* 🔥 Hide scrollbar but keep scroll */
+.story-text::-webkit-scrollbar {
+    display: none;
+}
+
+.story-text {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
 
         .typing-cursor {
             display: inline-block;
@@ -308,78 +415,6 @@
             flex-shrink: 0;
         }
 
-        .next-btn {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 0.6rem 1.5rem;
-            background: linear-gradient(45deg, #00bfff, #87ceeb);
-            border: none;
-            border-radius: 25px;
-            color: #000;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            box-shadow: 0 0 25px rgba(0, 191, 255, 0.4);
-            min-width: 100px;
-        }
-
-        .next-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 35px rgba(0, 191, 255, 0.6);
-        }
-
-        .next-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .home-btn {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 0.5rem 1.2rem;
-            background: linear-gradient(45deg, #4682b4, #1e90ff);
-            border: none;
-            border-radius: 20px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            box-shadow: 0 0 20px rgba(70, 130, 180, 0.4);
-        }
-
-        .home-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(70, 130, 180, 0.6);
-        }
-
-        .progress-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.8rem;
-            color: #00bfff;
-        }
-
-        .progress-bar {
-            width: 80px;
-            height: 4px;
-            background: rgba(0, 191, 255, 0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00bfff, #4682b4);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-            width: var(--progress, 0%);
-        }
 
         .glow-effect {
             position: fixed;
@@ -447,14 +482,6 @@
                 align-items: stretch;
             }
 
-            .next-btn, .home-btn {
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-
-            .progress-indicator {
-                justify-content: center;
-            }
 
             .uranus-system {
                 transform: rotate(-98deg) scale(0.7);
@@ -499,24 +526,20 @@
         </div>
 
         <div class="story-interface">
-            <div class="story-text" id="storyText">
-                {{ story }}
+            <div class="story-text" id="chatBox"></div>
+
+               <div class="chat-bar" style="display:flex; gap:10px; margin-top:10px;">
+                <input 
+                    id="userInput"
+                    type="text"
+                    placeholder="Speak. What do you want?"
+                    autocomplete="off"
+                >
+                
+                <button onclick="sendMessage()" class="next-btn">Send</button>
             </div>
 
-            <div class="story-controls">
-                <button class="home-btn" onclick="goHome()">← Home</button>
-
-                <div class="progress-indicator">
-                    <span>Progress:</span>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <span id="progressText">1/10</span>
-                </div>
-
-                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next →</button>
-            </div>
-        </div>
+ 
     </div>
 
     <script>
@@ -632,16 +655,83 @@
             });
         }
 
-        // Button hover effects
-        document.querySelectorAll('.next-btn, .home-btn').forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'scale(1.5)';
-            });
+        let isSending = false;
 
-            element.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'scale(1)';
-            });
+async function sendMessage() {
+    if (isSending) return;
+
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chatBox");
+
+    const message = input.value.trim();
+    if (!message) return;
+
+    isSending = true;
+
+    // 👤 USER
+    const userMsg = document.createElement("div");
+    userMsg.className = "msg user";
+    userMsg.innerText = message;
+    chat.appendChild(userMsg);
+
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+
+    // 🤖 BOT (Typing animation)
+    const botMsg = document.createElement("div");
+    botMsg.className = "msg bot";
+
+    botMsg.innerHTML = `
+        <div class="typing">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
+
+    chat.appendChild(botMsg);
+    chat.scrollTop = chat.scrollHeight;
+
+    try {
+        const res = await fetch("/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                message: message,
+                planet: window.location.pathname.split("/").pop()
+            })
         });
+
+        const data = await res.json();
+
+        // ✨ replace typing with real response
+        await typeText(botMsg, data.reply, 18);
+
+    } catch {
+        botMsg.innerText = "Something went wrong...";
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+    isSending = false;
+}
+
+const input = document.getElementById("userInput");
+
+input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+document.getElementById("userInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+       createStars();
 
         // Story progression function
         async function nextStory() {
@@ -672,10 +762,6 @@
 
                     await typeText(storyText, newText, 25);
 
-                    // Update progress
-                    currentStoryPart++;
-                    updateProgress();
-
                     // Update planet image if provided
                     if (data.planet_image) {
                         updatePlanetImage(data.planet_image);
@@ -701,16 +787,6 @@
                     nextBtn.textContent = 'Next →';
                 }
             }
-        }
-
-        // Update progress indicator
-        function updateProgress() {
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-
-            const progressPercentage = (currentStoryPart / totalParts) * 100;
-            progressFill.style.setProperty('--progress', progressPercentage + '%');
-            progressText.textContent = `${currentStoryPart}/${totalParts}`;
         }
 
         // Update planet image (for dynamic changes)
