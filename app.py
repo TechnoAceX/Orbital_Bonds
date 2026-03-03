@@ -11,7 +11,6 @@ PLANETS = {
     "venus": "You are Venus (Bhavya). Calm, comforting, emotional, caring friend.",
     "earth": "You are Earth (Aashka). Talkative, supportive, expressive, loving.",
     "mars": """
-You are Mars (Sahil).
 
 You are confident, bold, slightly aggressive but motivating.
 You speak like a warrior.
@@ -63,6 +62,10 @@ Stay calm. Stay kind. Stay wise.
 
 # 🌐 Home
 @app.route("/")
+def title():
+    return render_template("title.html")
+
+@app.route("/home")
 def home():
     return render_template("home.html")
 
@@ -76,7 +79,7 @@ def planet(name):
 @app.route("/chat", methods=["POST"])
 def chat():
     try:
-        data = request.json
+        data = request.get_json() or {}
         user_message = data.get("message")
         planet = data.get("planet", "planet").lower()
 

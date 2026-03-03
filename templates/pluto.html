@@ -54,6 +54,72 @@
             animation: twinkle 2s infinite;
         }
 
+/* Chat scroll fix */
+#chatBox {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Input area */
+.chat-input-area {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#userInput {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(147, 112, 219, 0.4);
+
+    background: rgba(20, 10, 25, 0.8); /* DARK GLASS */
+    color: #ffffff;
+
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+
+    outline: none;
+    backdrop-filter: blur(8px);
+
+    transition: all 0.25s ease;
+}
+
+#userInput::placeholder {
+    color: rgba(200, 180, 255, 0.5);
+}
+#userInput:focus {
+    border: 1px solid #9370db;
+    box-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
+}
+.chat-input-area {
+    background: rgba(10, 5, 15, 0.6);
+    padding: 10px;
+    border-radius: 15px;
+    border: 1px solid rgba(147, 112, 219, 0.2);
+}
+
+/* Messages */
+.msg {
+    margin: 6px 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+/* User message */
+.msg.user {
+    text-align: right;
+    color: #c787ff;
+}
+
+/* Bot message */
+.msg.bot {
+    text-align: left;
+    color: #ebbeff;
+    font-weight: bold;
+}
+
         @keyframes twinkle {
             0%, 100% { opacity: 0.1; }
             50% { opacity: 0.8; }
@@ -396,29 +462,6 @@
             box-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
         }
 
-        .progress-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #9370db;
-        }
-
-        .progress-bar {
-            width: 100px;
-            height: 4px;
-            background: rgba(147, 112, 219, 0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #9370db, #4b0082);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-            width: var(--progress, 0%);
-        }
 
         .glow-effect {
             position: fixed;
@@ -479,9 +522,6 @@
                 margin-bottom: 0.5rem;
             }
 
-            .progress-indicator {
-                justify-content: center;
-            }
         }
     </style>
 </head>
@@ -495,7 +535,7 @@
     <div class="glow-effect"></div>
 
     <div class="story-container">
-        <h1 class="story-title">Pluto's Story</h1>
+        <h1 class="story-title">Pluto: The Distant Echo</h1>
 
         <div class="planet-section">
             <div class="pluto-system">
@@ -507,24 +547,17 @@
             </div>
         </div>
 
-        <div class="story-interface">
-            <div class="story-text" id="storyText">
-                <span class="typing-cursor"></span>
-            </div>
+       <div class="story-text" id="chatBox"></div>
 
-            <div class="story-controls">
-                <button class="home-btn" onclick="goHome()">Home</button>
-
-                <div class="progress-indicator">
-                    <span id="progressText">1/70</span>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                </div>
-
-                <button class="next-btn" id="nextBtn" onclick="nextStory()">Next</button>
-            </div>
+        <div class="chat-input-area">
+            <input 
+                id="userInput" 
+                type="text" 
+                placeholder="Speak. What do you want?" 
+            >
+            <button onclick="sendMessage()" class="next-btn">Send</button>
         </div>
+
     </div>
 
     <script>
@@ -550,6 +583,45 @@
             }
         }
 
+        async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chatBox");
+
+    const message = input.value.trim();
+    if (!message) return;
+
+    // user message
+    chat.innerHTML += `<div class="msg user">> ${message}</div>`;
+    input.value = "";
+
+    // 🔥 ADD TYPING INDICATOR
+    const typingId = "typing-" + Date.now();
+    chat.innerHTML += `<div class="msg bot" id="${typingId}">...thinking</div>`;
+    chat.scrollTop = chat.scrollHeight;
+
+    try {
+        const res = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message,
+                planet: "pluto"
+            })
+        });
+
+        const data = await res.json();
+
+        // 🔥 REPLACE typing with actual reply
+        document.getElementById(typingId).innerText = data.reply;
+
+    } catch (err) {
+        document.getElementById(typingId).innerText = "...signal lost in the void";
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+}
         let currentStoryIndex = 0;
         const totalPages = 70;
         const stories = new Array(totalPages).fill('');
@@ -561,31 +633,23 @@
             }
         }
 
-        function goHome() {
-            window.location.href = 'index.html';
-        }
-
-        function displayStory() {
-            const storyText = document.getElementById('storyText');
-            const progressText = document.getElementById('progressText');
-            const progressFill = document.getElementById('progressFill');
-            const nextBtn = document.getElementById('nextBtn');
-
-            storyText.innerHTML = '<span class="typing-cursor"></span>';
-
-            progressText.textContent = `${currentStoryIndex + 1}/${totalPages}`;
-            const progressPercent = ((currentStoryIndex + 1) / totalPages) * 100;
-            progressFill.style.setProperty('--progress', progressPercent + '%');
-
-            nextBtn.disabled = currentStoryIndex >= stories.length - 1;
-        }
-
         function init() {
             createStars();
             displayStory();
         }
 
         window.addEventListener('load', init);
+
+        document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("userInput");
+
+    input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+});
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === ' ') {
