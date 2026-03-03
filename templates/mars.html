@@ -97,6 +97,8 @@
             letter-spacing: 0.1em;
         }
 
+        
+
         @keyframes gradientShift {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -388,7 +390,7 @@
                 font-family: 'Space Mono', monospace;
             "
         >
-            <button onclick="sendMessage()" class="next-btn">Command</button>
+            <button onclick="sendMessage()" class="next-btn">Send</button>
         </div>
 
     <script>
@@ -438,55 +440,123 @@
             }
         }
 
-        //Send Message
-            let isSending = false;
+ 
+  
 
-            async function sendMessage() {
-                if (isSending) return;
+// ✨ Typing effect
+function typeText(element, text, speed = 25) {
+    element.innerHTML = "";
+    let i = 0;
 
-                const input = document.getElementById("userInput");
-                const chat = document.getElementById("chatBox");
+    const cursor = document.createElement("span");
+    cursor.className = "typing-cursor";
+    element.appendChild(cursor);
 
-                const message = input.value.trim();
-                if (!message) return;
+    function type() {
+        if (i < text.length) {
+            element.insertBefore(document.createTextNode(text[i]), cursor);
+            i++;
+            setTimeout(type, speed);
+        } else {
+            cursor.remove();
+        }
+    }
 
-                isSending = true;
+    type();
+}
 
-                chat.innerHTML += `<div class="msg user">> ${message}</div>`;
-                input.value = "";
+let isSending = false;
 
-                try {
-                    const res = await fetch("/chat", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({
-                            message: message,
-                            planet: "mars"
-                        })
-                    });
+// ✨ typing effect
+function typeText(element, text, speed = 20) {
+    element.innerHTML = "";
+    let i = 0;
 
-                    const data = await res.json();
-                    chat.innerHTML += `<div class="msg bot">${data.reply}</div>`;
-                } catch {
-                    chat.innerHTML += `<div class="msg bot">Mars is silent...</div>`;
-                }
+    const cursor = document.createElement("span");
+    cursor.className = "typing-cursor";
+    element.appendChild(cursor);
 
-                chat.scrollTop = chat.scrollHeight;
-                isSending = false;
-            }
+    function type() {
+        if (i < text.length) {
+            element.insertBefore(document.createTextNode(text[i]), cursor);
+            i++;
+            setTimeout(type, speed);
+        } else {
+            cursor.remove();
+        }
+    }
 
-                    document.addEventListener("DOMContentLoaded", () => {
-            const input = document.getElementById("userInput");
+    type();
+}
 
-            input.addEventListener("keydown", function (e) {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
+// 🚀 main function
+async function sendMessage() {
+    if (isSending) return;
+
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chatBox");
+
+    const message = input.value.trim();
+    if (!message) return;
+
+    isSending = true;
+
+    // 👤 user message
+    chat.innerHTML += `<div class="msg user">> ${message}</div>`;
+    input.value = "";
+
+    // 🤖 bot loading UI
+    const botMsg = document.createElement("div");
+    botMsg.className = "msg bot";
+
+    botMsg.innerHTML = `
+        <div class="thinking-bar"></div>
+        <div class="thinking-bar short"></div>
+    `;
+
+    chat.appendChild(botMsg);
+    chat.scrollTop = chat.scrollHeight;
+
+    try {
+        const res = await fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                message: message,
+                planet: window.location.pathname.split("/").pop()
+            })
         });
-        
-        // Create dust storm effect
+
+        const data = await res.json();
+
+        // ✨ replace shimmer with typing
+        botMsg.innerHTML = "";
+        typeText(botMsg, data.reply);
+
+    } catch (err) {
+        botMsg.innerHTML = "Something went wrong...";
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+    isSending = false;
+}
+
+// ⌨️ Enter key
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("userInput");
+
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    input.focus();
+});
+
+// Create dust storm effect
+
         function createDustStorm() {
             const starsContainer = document.querySelector('.stars');
             for (let i = 0; i < 10; i++) {

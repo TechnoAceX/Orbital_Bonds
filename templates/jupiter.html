@@ -178,7 +178,7 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
         }
-
+ 
         .story-text {
             font-size: clamp(1rem, 2.5vw, 1.2rem);
             line-height: 1.6;
@@ -242,51 +242,6 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .home-btn {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 0.6rem 1.5rem;
-            background: linear-gradient(45deg, #00ffff, #0080ff);
-            border: none;
-            border-radius: 20px;
-            color: #000;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-        }
-
-        .home-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
-        }
-
-        .progress-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #00ffff;
-        }
-
-        .progress-bar {
-            width: 100px;
-            height: 4px;
-            background: rgba(0, 255, 255, 0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ffff, #0080ff);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-            width: var(--progress, 0%);
         }
 
         .glow-effect {
@@ -391,8 +346,8 @@
 }
 
 .user {
-    background: #00ffff;
-    color: black;
+    background: rgba(196, 102, 2, 0.1);
+    color: white;
     margin-left: auto;
     text-align: right;
 }
@@ -412,7 +367,7 @@
     <div class="glow-effect"></div>
 
     <div class="story-container">
-        <h1 class="story-title">Jupiter's Story: Tides and Sacrifice</h1>
+        <h1 class="story-title">Jupiter: The Weight of Wisdom</h1>
 
         <div class="planet-section">
             <div class="jupiter-planet" id="jupiterPlanet"></div>
@@ -436,144 +391,186 @@
         </div>
     </div>
 <script>
-/* ===============================
-   CURSOR
-=================================*/
-const cursor = document.querySelector('.custom-cursor');
+            /* ===============================
+            CURSOR
+            =================================*/
+            const cursor = document.querySelector('.custom-cursor');
 
-let mouseX = 0, mouseY = 0;
-let cursorX = 0, cursorY = 0;
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
 
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
 
-function updateCursor() {
-    cursorX += (mouseX - cursorX) * 0.1;
-    cursorY += (mouseY - cursorY) * 0.1;
+            function updateCursor() {
+                cursorX += (mouseX - cursorX) * 0.1;
+                cursorY += (mouseY - cursorY) * 0.1;
 
-    cursor.style.left = cursorX + 'px';
-    cursor.style.top = cursorY + 'px';
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
 
-    requestAnimationFrame(updateCursor);
-}
-updateCursor();
-
-
-/* ===============================
-   STARS BACKGROUND
-=================================*/
-function createStars() {
-    const starsContainer = document.querySelector('.stars');
-
-    for (let i = 0; i < 150; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.animationDelay = Math.random() * 3 + 's';
-
-        const size = Math.random() * 3 + 1;
-        star.style.width = size + 'px';
-        star.style.height = size + 'px';
-
-        starsContainer.appendChild(star);
-    }
-}
+                requestAnimationFrame(updateCursor);
+            }
+            updateCursor();
 
 
-/* ===============================
-   CHAT SYSTEM
-=================================*/
-async function sendMessage() {
-    const input = document.getElementById("userInput");
-    const chat = document.getElementById("chatBox");
+            /* ===============================
+            STARS BACKGROUND
+            =================================*/
+            function createStars() {
+                const starsContainer = document.querySelector('.stars');
 
-    const message = input.value.trim();
-    if (!message) return;
+                for (let i = 0; i < 150; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
 
-    // USER MESSAGE
-    chat.innerHTML += `
-        <div class="msg user">${message}</div>
-    `;
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.animationDelay = Math.random() * 3 + 's';
 
-    input.value = "";
-    chat.scrollTop = chat.scrollHeight;
+                    const size = Math.random() * 3 + 1;
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
 
-    try {
-        const res = await fetch("/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: message,
-                planet: "jupiter"
-            })
-        });
-
-        const data = await res.json();
-
-        // BOT MESSAGE
-        chat.innerHTML += `
-            <div class="msg bot">${data.reply}</div>
-        `;
-
-    } catch (err) {
-        chat.innerHTML += `
-            <div class="msg bot">Hmm... something went wrong, my child.</div>
-        `;
-        console.error(err);
-    }
-
-    chat.scrollTop = chat.scrollHeight;
-}
+                    starsContainer.appendChild(star);
+                }
+            }
 
 
-/* ===============================
-   ENTER KEY SUPPORT
-=================================*/
-document.getElementById("userInput").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-        sendMessage();
-    }
-});
+            /* ===============================
+            CHAT SYSTEM
+            =================================*/
+            let isSending = false;
+
+            // ✨ Typing effect
+            function typeText(element, text, speed = 25) {
+                element.innerHTML = "";
+                let i = 0;
+
+                const cursor = document.createElement("span");
+                cursor.className = "typing-cursor";
+                element.appendChild(cursor);
+
+                function type() {
+                    if (i < text.length) {
+                        element.insertBefore(document.createTextNode(text[i]), cursor);
+                        i++;
+                        setTimeout(type, speed);
+                    } else {
+                        cursor.remove();
+                    }
+                }
+
+                type();
+            }
+
+            // 🚀 Main send function
+            async function sendMessage() {
+                if (isSending) return;
+
+                const input = document.getElementById("userInput");
+                const chat = document.getElementById("chatBox");
+
+                const message = input.value.trim();
+                if (!message) return;
+
+                isSending = true;
+
+                // 👤 User message
+                chat.innerHTML += `<div class="msg user">> ${message}</div>`;
+                input.value = "";
+
+                // 🤖 Bot placeholder
+                const botMsg = document.createElement("div");
+                botMsg.className = "msg bot";
+                botMsg.innerHTML = "Thinking...";
+                chat.appendChild(botMsg);
+
+                chat.scrollTop = chat.scrollHeight;
+
+                try {
+                    const res = await fetch("/chat", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            planet: window.location.pathname.split("/").pop() // ✅ dynamic
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    // ✨ Typing animation
+                    typeText(botMsg, data.reply);
+
+                } catch (err) {
+                    botMsg.innerHTML = "Something went wrong...";
+                }
+
+                chat.scrollTop = chat.scrollHeight;
+                isSending = false;
+            }
+
+            // ⌨️ Enter key support
+            document.addEventListener("DOMContentLoaded", () => {
+                const input = document.getElementById("userInput");
+
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+
+                input.focus(); // 🔥 auto focus
+            });
+
+            /* ===============================
+            ENTER KEY SUPPORT
+            =================================*/
+            document.getElementById("userInput").addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    sendMessage();
+                }
+            });
 
 
-/* ===============================
-   BUTTON HOVER EFFECT
-=================================*/
-document.querySelectorAll('.next-btn, .home-btn').forEach(btn => {
-    btn.addEventListener('mouseenter', () => {
-        cursor.style.transform = 'scale(1.5)';
-    });
+            /* ===============================
+            BUTTON HOVER EFFECT
+            =================================*/
+            document.querySelectorAll('.next-btn, .home-btn').forEach(btn => {
+                btn.addEventListener('mouseenter', () => {
+                    cursor.style.transform = 'scale(1.5)';
+                });
 
-    btn.addEventListener('mouseleave', () => {
-        cursor.style.transform = 'scale(1)';
-    });
-});
-
-
-/* ===============================
-   INIT
-=================================*/
-createStars();
+                btn.addEventListener('mouseleave', () => {
+                    cursor.style.transform = 'scale(1)';
+                });
+            });
 
 
-/* ===============================
-   PAUSE ANIMATIONS (TAB SWITCH)
-=================================*/
-document.addEventListener('visibilitychange', () => {
-    const state = document.hidden ? 'paused' : 'running';
+            /* ===============================
+            INIT
+            =================================*/
+            createStars();
 
-    document.querySelectorAll('*').forEach(el => {
-        if (el.style.animationPlayState !== undefined) {
-            el.style.animationPlayState = state;
-        }
-    });
-});
-</script>
+
+            /* ===============================
+            PAUSE ANIMATIONS (TAB SWITCH)
+            =================================*/
+            document.addEventListener('visibilitychange', () => {
+                const state = document.hidden ? 'paused' : 'running';
+
+                document.querySelectorAll('*').forEach(el => {
+                    if (el.style.animationPlayState !== undefined) {
+                        el.style.animationPlayState = state;
+                    }
+                });
+            });
+        </script>
 </body>
 </html>
